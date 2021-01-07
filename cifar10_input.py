@@ -7,7 +7,8 @@ import sys
 import numpy as np
 import cPickle
 import os
-import cv2
+import tensorflow as tf
+# import cv2
 
 data_dir = 'cifar10_data'
 full_data_dir = 'cifar10_data/cifar-10-batches-py/data_batch_'
@@ -118,10 +119,11 @@ def horizontal_flip(image, axis):
     '''
     flip_prop = np.random.randint(low=0, high=2)
     if flip_prop == 0:
-        image = cv2.flip(image, axis)
-
+        assert axis == 0 or axis == 1
+        # image = cv2.flip(image, axis)
+        image = np.flip(image, axis)
+    
     return image
-
 
 def whitening_image(image_np):
     '''
@@ -181,7 +183,7 @@ def read_validation_data():
     Read in validation data. Whitening at the same time
     :return: Validation image data as 4D numpy array. Validation labels as 1D numpy array
     '''
-    validation_array, validation_labels = read_in_all_images([vali_dir],
+    validation_array, validation_labels = read_in_all_images([vali_dir], shuffle=False,
                                                        is_random_label=VALI_RANDOM_LABEL)
     validation_array = whitening_image(validation_array)
 

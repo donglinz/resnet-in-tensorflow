@@ -1,0 +1,9 @@
+cifar10_data/
+logs*/
+*.pyc
+*.log
+*.png
+logs*
+resnetckpt
+smallcnne200
+smallcnnepoch50

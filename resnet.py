@@ -20,7 +20,7 @@ def activation_summary(x):
     tf.summary.scalar(tensor_name + '/sparsity', tf.nn.zero_fraction(x))
 
 
-def create_variables(name, shape, initializer=tf.contrib.layers.xavier_initializer(), is_fc_layer=False):
+def create_variables(name, shape, initializer=None, is_fc_layer=False):
     '''
     :param name: A string. The name of the new variable
     :param shape: A list of dimensions
@@ -30,6 +30,12 @@ def create_variables(name, shape, initializer=tf.contrib.layers.xavier_initializ
     :return: The created variable
     '''
     
+    if initializer is None:
+        if FLAGS.deterministic_init:
+            initializer = tf.contrib.layers.xavier_initializer(seed=0)
+        else:
+            initializer = tf.contrib.layers.xavier_initializer()
+
     ## TODO: to allow different weight decay to fully connected layer and conv layer
     regularizer = tf.contrib.layers.l2_regularizer(scale=FLAGS.weight_decay)
 
@@ -45,8 +51,14 @@ def output_layer(input_layer, num_labels):
     :return: output layer Y = WX + B
     '''
     input_dim = input_layer.get_shape().as_list()[-1]
-    fc_w = create_variables(name='fc_weights', shape=[input_dim, num_labels], is_fc_layer=True,
-                            initializer=tf.uniform_unit_scaling_initializer(factor=1.0))
+
+    if FLAGS.deterministic_init:
+        fc_w = create_variables(name='fc_weights', shape=[input_dim, num_labels], is_fc_layer=True,
+                                initializer=tf.uniform_unit_scaling_initializer(factor=1.0, seed=0))
+    else:
+        fc_w = create_variables(name='fc_weights', shape=[input_dim, num_labels], is_fc_layer=True,
+                                initializer=tf.uniform_unit_scaling_initializer(factor=1.0))
+                
     fc_b = create_variables(name='fc_bias', shape=[num_labels], initializer=tf.zeros_initializer())
 
     fc_h = tf.matmul(input_layer, fc_w) + fc_b
@@ -88,6 +100,22 @@ def conv_bn_relu_layer(input_layer, filter_shape, stride):
     output = tf.nn.relu(bn_layer)
     return output
 
+def conv_relu_layer(input_layer, filter_shape, stride):
+    '''
+    A helper function to conv, batch normalize and relu the input tensor sequentially
+    :param input_layer: 4D tensor
+    :param filter_shape: list. [filter_height, filter_width, filter_depth, filter_number]
+    :param stride: stride size for conv
+    :return: 4D tensor. Y = Relu(batch_normalize(conv(X)))
+    '''
+
+    out_channel = filter_shape[-1]
+    filter = create_variables(name='conv', shape=filter_shape)
+
+    conv_layer = tf.nn.conv2d(input_layer, filter, strides=[1, stride, stride, 1], padding='SAME')
+
+    output = tf.nn.relu(conv_layer)
+    return output
 
 def bn_relu_conv_layer(input_layer, filter_shape, stride):
     '''
@@ -165,31 +193,59 @@ def inference(input_tensor_batch, n, reuse):
     '''
 
     layers = []
+    # with tf.variable_scope('conv0', reuse=reuse):
+    #     conv0 = conv_relu_layer(input_tensor_batch, [3, 3, 3, 32], 1)
+    # with tf.variable_scope('conv1', reuse=reuse):
+    #     conv0 = conv_relu_layer(conv0, [3, 3, 32, 32], 1)
+    #     conv0 = tf.nn.max_pool(conv0, (1, 2, 2, 1), (1, 2, 2, 1), padding='VALID')
+
+    # with tf.variable_scope('conv2', reuse=reuse):
+    #     conv1 = conv_relu_layer(conv0, [3, 3, 32, 64], 1)
+    # with tf.variable_scope('conv3', reuse=reuse):
+    #     conv1 = conv_relu_layer(conv1, [3, 3, 64, 64], 1)
+    #     conv1 = tf.nn.max_pool(conv1, (1, 2, 2, 1), (1, 2, 2, 1), padding='VALID')
+
+    # with tf.variable_scope('conv4', reuse=reuse):
+    #     conv2 = conv_relu_layer(conv1, [3, 3, 64, 64], 1)
+    # with tf.variable_scope('conv5', reuse=reuse):
+    #     conv2 = conv_relu_layer(conv2, [3, 3, 64, 64], 1)
+    #     conv2 = tf.nn.max_pool(conv2, (1, 2, 2, 1), (1, 2, 2, 1), padding='VALID')
+    # with tf.variable_scope('output', reuse=reuse):
+    #     flatten = tf.reshape(conv2, [conv2.shape[0], -1])
+    #     output = output_layer(flatten, 10)
+    # return output
+    
     with tf.variable_scope('conv0', reuse=reuse):
-        conv0 = conv_bn_relu_layer(input_tensor_batch, [3, 3, 3, 16], 1)
+        conv0 = conv_bn_relu_layer(input_tensor_batch, [3, 3, 3, 64], 1)
         activation_summary(conv0)
         layers.append(conv0)
 
     for i in range(n):
         with tf.variable_scope('conv1_%d' %i, reuse=reuse):
             if i == 0:
-                conv1 = residual_block(layers[-1], 16, first_block=True)
+                conv1 = residual_block(layers[-1], 64, first_block=True)
             else:
-                conv1 = residual_block(layers[-1], 16)
+                conv1 = residual_block(layers[-1], 64)
             activation_summary(conv1)
             layers.append(conv1)
 
     for i in range(n):
         with tf.variable_scope('conv2_%d' %i, reuse=reuse):
-            conv2 = residual_block(layers[-1], 32)
+            conv2 = residual_block(layers[-1], 128)
             activation_summary(conv2)
             layers.append(conv2)
 
     for i in range(n):
         with tf.variable_scope('conv3_%d' %i, reuse=reuse):
-            conv3 = residual_block(layers[-1], 64)
+            conv3 = residual_block(layers[-1], 256)
             layers.append(conv3)
-        assert conv3.get_shape().as_list()[1:] == [8, 8, 64]
+        assert conv3.get_shape().as_list()[1:] == [8, 8, 256]
+
+    for i in range(n):
+        with tf.variable_scope('conv4_%d' %i, reuse=reuse):
+            conv4 = residual_block(layers[-1], 512)
+            layers.append(conv4)
+        # assert conv3.get_shape().as_list()[1:] == [8, 8, 512]
 
     with tf.variable_scope('fc', reuse=reuse):
         in_channel = layers[-1].get_shape().as_list()[-1]
@@ -197,7 +253,7 @@ def inference(input_tensor_batch, n, reuse):
         relu_layer = tf.nn.relu(bn_layer)
         global_pool = tf.reduce_mean(relu_layer, [1, 2])
 
-        assert global_pool.get_shape().as_list()[-1:] == [64]
+        assert global_pool.get_shape().as_list()[-1:] == [512]
         output = output_layer(global_pool, 10)
         layers.append(output)
 

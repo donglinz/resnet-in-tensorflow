@@ -7,8 +7,14 @@ from datetime import datetime
 import time
 from cifar10_input import *
 import pandas as pd
+import os
+import sys
+import hashlib
+# os.environ["TF_DETERMINISTIC_OPS"] = "1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
-
+if not os.path.exists(train_dir):
+    os.makedirs(train_dir)
 
 class Train(object):
     '''
@@ -63,7 +69,7 @@ class Train(object):
         predictions = tf.nn.softmax(logits)
         self.train_top1_error = self.top_k_error(predictions, self.label_placeholder, 1)
 
-
+        self.vali_logits = vali_logits
         # Validation loss
         self.vali_loss = self.loss(vali_logits, self.vali_label_placeholder)
         vali_predictions = tf.nn.softmax(vali_logits)
@@ -73,7 +79,34 @@ class Train(object):
                                                                 self.train_top1_error)
         self.val_op = self.validation_op(validation_step, self.vali_top1_error, self.vali_loss)
 
+    def get_weight_hash(self, sess):
+        with open(os.path.join(train_dir, 'hash.txt'), 'a') as f:
+            for w in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
+                name = w.name
+                w = sess.run(w)
+                if w.flags.writeable:
+                    w.flags.writeable = False
+                
+                f.write(name + ' ' + hashlib.md5(w.tobytes()).hexdigest() + '\n')
 
+    def get_input_hash(self, all_data, all_labels):
+        arr_x = []
+        arr_y = []
+        for _ in range(1000):
+            train_batch_data, train_batch_labels = self.generate_augment_train_batch(all_data, all_labels,
+                                                                        FLAGS.train_batch_size)
+            arr_x.extend(np.split(train_batch_data, train_batch_data.shape[0], axis=0))
+            arr_y.extend(np.split(train_batch_labels, train_batch_labels.shape[0], axis=0))
+
+        arr_x = np.array(arr_x)
+        arr_y = np.array(arr_y)
+        
+        arr_x.flags.writeable = False
+        arr_y.flags.writeable = False
+
+        with open(os.path.join(train_dir, 'hash.txt'), 'a') as f:
+            f.write('train data x hash:' + hashlib.md5(arr_x.tobytes()).hexdigest() + '\n')
+            f.write('train data y hash:' + hashlib.md5(arr_y.tobytes()).hexdigest() + '\n')
 
     def train(self):
         '''
@@ -92,8 +125,12 @@ class Train(object):
         # summarizing operations by running summary_op. Initialize a new session
         saver = tf.train.Saver(tf.global_variables())
         summary_op = tf.summary.merge_all()
-        init = tf.initialize_all_variables()
-        sess = tf.Session()
+        init = tf.global_variables_initializer()
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth=True
+        sess = tf.Session(config=config)
+
+        # tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
 
 
         # If you want to load from a checkpoint
@@ -103,6 +140,13 @@ class Train(object):
         else:
             sess.run(init)
 
+        # self.get_weight_hash(sess)
+        # self.get_input_hash(all_data, all_labels)
+        # exit()
+        # for v in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
+        #     with open("var2.log", "a") as f:
+        #         f.write(v.name + str(hash(str(sess.run(v).data))) + "\n")
+        
         # This summary writer object helps write summaries on tensorboard
         summary_writer = tf.summary.FileWriter(train_dir, sess.graph)
 
@@ -120,6 +164,8 @@ class Train(object):
             train_batch_data, train_batch_labels = self.generate_augment_train_batch(all_data, all_labels,
                                                                         FLAGS.train_batch_size)
 
+            # with open("data4.log", "a") as f:
+            #     f.write(str(hash(str(train_batch_data.data))) + " " + str(hash(str(train_batch_labels.data))) + "\n")
 
             validation_batch_data, validation_batch_labels = self.generate_vali_batch(vali_data,
                                                            vali_labels, FLAGS.validation_batch_size)
@@ -132,7 +178,7 @@ class Train(object):
                     validation_loss_value, validation_error_value = self.full_validation(loss=self.vali_loss,
                                             top1_error=self.vali_top1_error, vali_data=vali_data,
                                             vali_labels=vali_labels, session=sess,
-                                            batch_data=train_batch_data, batch_label=train_batch_labels)
+                                            batch_data=train_batch_data, batch_label=train_batch_labels, train_step=step)
 
                     vali_summ = tf.Summary()
                     vali_summ.value.add(tag='full_validation_error',
@@ -184,7 +230,8 @@ class Train(object):
                 print 'Validation top1 error = %.4f' % validation_error_value
                 print 'Validation loss = ', validation_loss_value
                 print '----------------------------'
-
+                sys.stdout.flush()
+                sys.stderr.flush()
                 step_list.append(step)
                 train_error_list.append(train_error_value)
 
@@ -196,15 +243,15 @@ class Train(object):
 
             # Save checkpoints every 10000 steps
             if step % 10000 == 0 or (step + 1) == FLAGS.train_steps:
-                checkpoint_path = os.path.join(train_dir, 'model.ckpt')
-                saver.save(sess, checkpoint_path, global_step=step)
+                # checkpoint_path = os.path.join(train_dir, 'model.ckpt')
+                # saver.save(sess, checkpoint_path, global_step=step)
 
                 df = pd.DataFrame(data={'step':step_list, 'train_error':train_error_list,
                                 'validation_error': val_error_list})
                 df.to_csv(train_dir + FLAGS.version + '_error.csv')
 
 
-    def test(self, test_image_array):
+    def test(self, test_image_array=None):
         '''
         This function is used to evaluate the test data. Please finish pre-precessing in advance
 
@@ -212,6 +259,9 @@ class Train(object):
         img_depth]
         :return: the softmax probability with shape [num_test_images, num_labels]
         '''
+
+        if test_image_array is None:
+            test_image_array, test_label_array = read_validation_data()
         num_test_images = len(test_image_array)
         num_batches = num_test_images // FLAGS.test_batch_size
         remain_images = num_test_images % FLAGS.test_batch_size
@@ -227,7 +277,9 @@ class Train(object):
 
         # Initialize a new session and restore a checkpoint
         saver = tf.train.Saver(tf.all_variables())
-        sess = tf.Session()
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth=True
+        sess = tf.Session(config=config)
 
         saver.restore(sess, FLAGS.test_ckpt_path)
         print 'Model restored from ', FLAGS.test_ckpt_path
@@ -259,7 +311,8 @@ class Train(object):
                 self.test_image_placeholder: test_image_batch})
 
             prediction_array = np.concatenate((prediction_array, batch_prediction_array))
-
+        prediction_array = np.argmax(prediction_array, axis=1)
+        np.savetxt(FLAGS.test_ckpt_path+"_pred.txt", prediction_array)
         return prediction_array
 
 
@@ -347,7 +400,8 @@ class Train(object):
         tf.summary.scalar('train_top1_error_avg', ema.average(top1_error))
         tf.summary.scalar('train_loss_avg', ema.average(total_loss))
 
-        opt = tf.train.MomentumOptimizer(learning_rate=self.lr_placeholder, momentum=0.9)
+        # opt = tf.train.MomentumOptimizer(learning_rate=self.lr_placeholder, momentum=0.9)
+        opt = tf.train.AdamOptimizer(learning_rate=self.lr_placeholder)
         train_op = opt.minimize(total_loss, global_step=global_step)
         return train_op, train_ema_op
 
@@ -384,7 +438,7 @@ class Train(object):
 
 
     def full_validation(self, loss, top1_error, session, vali_data, vali_labels, batch_data,
-                        batch_label):
+                        batch_label, train_step):
         '''
         Runs validation on all the 10000 valdiation images
         :param loss: tensor with shape [1]
@@ -397,31 +451,42 @@ class Train(object):
         :return: float, float
         '''
         num_batches = 10000 // FLAGS.validation_batch_size
-        order = np.random.choice(10000, num_batches * FLAGS.validation_batch_size)
-        vali_data_subset = vali_data[order, ...]
-        vali_labels_subset = vali_labels[order]
+        # order = np.random.choice(10000, num_batches * FLAGS.validation_batch_size)
+        # vali_data_subset = vali_data[order, ...]
+        vali_data_subset = vali_data
+        # vali_labels_subset = vali_labels[order]
+        vali_labels_subset = vali_labels
 
         loss_list = []
         error_list = []
-
+        prediction_array = np.array([]).reshape(0, 10)
         for step in range(num_batches):
             offset = step * FLAGS.validation_batch_size
             feed_dict = {self.image_placeholder: batch_data, self.label_placeholder: batch_label,
                 self.vali_image_placeholder: vali_data_subset[offset:offset+FLAGS.validation_batch_size, ...],
                 self.vali_label_placeholder: vali_labels_subset[offset:offset+FLAGS.validation_batch_size],
                 self.lr_placeholder: FLAGS.init_lr}
-            loss_value, top1_error_value = session.run([loss, top1_error], feed_dict=feed_dict)
+            loss_value, top1_error_value, pred = session.run([loss, top1_error, self.vali_logits], feed_dict=feed_dict)
+            prediction_array = np.concatenate((prediction_array, pred))
             loss_list.append(loss_value)
             error_list.append(top1_error_value)
 
+        prediction_array = np.argmax(prediction_array, axis=1)
+        np.savetxt(os.path.join(train_dir, "pred{}.txt".format(train_step // 391)), prediction_array)
+
         return np.mean(loss_list), np.mean(error_list)
 
+if FLAGS.deterministic_input:
+    np.random.seed(0)
 
 maybe_download_and_extract()
 # Initialize the Train object
 train = Train()
 # Start the training session
-train.train()
+if FLAGS.test:
+    train.test()
+else:
+    train.train()
 
 
 
