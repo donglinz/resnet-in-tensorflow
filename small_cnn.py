@@ -170,13 +170,14 @@ def get_input_hash():
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lr_schedule(epoch), verbose=True)
 
 def save_prediction(epoch, logs):
-  pred_array = np.array([]).reshape(0, 10)
-  for x, y in testloader:
-    pred = model(x)
-    pred_array = np.concatenate((pred_array, pred))
+  if epoch in [9, 49, 99, 199]:
+    pred_array = np.array([]).reshape(0, 10)
+    for x, y in testloader:
+      pred = model(x)
+      pred_array = np.concatenate((pred_array, pred))
 
-  pred_array = np.argmax(pred_array, axis=1)
-  np.savetxt(os.path.join(args.ckpt_folder, f'pred{epoch}.txt'), pred_array)
+    pred_array = np.argmax(pred_array, axis=1)
+    np.savetxt(os.path.join(args.ckpt_folder, f'pred{epoch}.txt'), pred_array)
 
 def save_model(epoch, logs):
   if epoch in [9, 49, 99, 199]:
