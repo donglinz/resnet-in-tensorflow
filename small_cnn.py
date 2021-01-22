@@ -181,7 +181,7 @@ def save_prediction(epoch, logs):
 
 def save_model(epoch, logs):
   if epoch in [9, 49, 99, 199]:
-    tf.keras.models.save_model(model, os.path.join(args.ckpt_folder, f'ckpt{epoch}.h5'))
+    tf.keras.models.save_model(model, os.path.join(args.ckpt_folder, f'ckpt{epoch}'), save_format='tf')
 
 save_callback = tf.keras.callbacks.LambdaCallback(on_epoch_end=save_prediction, verbose=True)
 csv_logger = tf.keras.callbacks.CSVLogger(os.path.join(args.ckpt_folder, 'log.csv'))
