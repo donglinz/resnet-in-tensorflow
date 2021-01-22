@@ -21,7 +21,7 @@ for idx, legend in enumerate(legend_list):
     for lr in lr_list:
         arr = []
         for trial in range(trials):
-            arr.append(np.loadtxt('smallcnne200/{}{}{}/pred49.txt'.format(lr, legend, trial+1)).astype(int))
+            arr.append(np.loadtxt('{}{}{}/pred199.txt'.format(lr, legend, trial+1)).astype(int))
             # if lr == '4e-4':
             #     arr.append(np.loadtxt('{}{}{}/pred19.txt'.format(lr, legend, trial+1)).astype(int))
             # if lr == '8e-4':
@@ -48,15 +48,15 @@ plt.legend()
 
 plt.xticks(range(0, len(lr_list) * 2, 2), lr_list)
 # plt.xlim(-2, len(ticks)*2)
-plt.ylim(0.1, 0.4)
+plt.ylim(0.1, 0.40)
 plt.xlabel('Learning rate')
 plt.ylabel('Fraction of test labels different')
 plt.tight_layout()
 fig = plt.gcf()
 fig.set_size_inches(5, 7)
-plt.subplots_adjust(left=0.13, bottom=0.07, right=0.98, top=0.98)
+plt.subplots_adjust(left=0.15, bottom=0.07, right=0.98, top=0.98)
 plt.show()
-plt.savefig('smallcnne50.png')
+plt.savefig('smallcnndete200.png')
 
 # for lr in lr_list:
 #     for legend in legend_list:

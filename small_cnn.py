@@ -1,9 +1,13 @@
 import argparse
 parser = argparse.ArgumentParser()
+parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--deterministic_init', action='store_true')
 parser.add_argument('--deterministic_input', action='store_true')
+parser.add_argument('--deterministic_tf', action='store_true')
 parser.add_argument('--ckpt_folder', type=str, required=True)
 parser.add_argument('--lr', type=float, required=True)
+parser.add_argument('--save_ckpt', action='store_true')
+parser.add_argument('--save_pred', action='store_true')
 args = parser.parse_args()
 
 import tensorflow as tf
@@ -14,7 +18,9 @@ from tensorflow.keras.applications import resnet50
 from tensorflow.keras.initializers import GlorotUniform
 
 import os
-# os.environ["TF_DETERMINISTIC_OPS"] = "1"
+if args.deterministic_tf:
+  os.environ["TF_DETERMINISTIC_OPS"] = "1"
+  os.environ["TF_CUDNN_DETERMINISTIC"] = "1"
 import time
 
 import numpy as np
@@ -38,7 +44,7 @@ print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
 
 AUTO = tf.data.experimental.AUTOTUNE
-BATCH_SIZE = 128
+BATCH_SIZE = args.batch_size
 IMG_SHAPE = 32
 
 trainloader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
@@ -163,7 +169,7 @@ def get_input_hash():
 
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lr_schedule(epoch), verbose=True)
 
-def save_prediction(epoch):
+def save_prediction(epoch, logs):
   pred_array = np.array([]).reshape(0, 10)
   for x, y in testloader:
     pred = model(x)
@@ -173,19 +179,26 @@ def save_prediction(epoch):
   np.savetxt(os.path.join(args.ckpt_folder, f'pred{epoch}.txt'), pred_array)
 
 def save_model(epoch, logs):
-  # model.save(os.path.join(args.ckpt_folder, f'small_cnn_checkpoint{epoch}.h5'))
-  save_prediction(epoch)
+  if epoch in [9, 49, 99, 199]:
+    model.save(os.path.join(args.ckpt_folder, f'ckpt{epoch}.h5'))
 
-save_callback = tf.keras.callbacks.LambdaCallback(on_epoch_end=save_model, verbose=True)
+save_callback = tf.keras.callbacks.LambdaCallback(on_epoch_end=save_prediction, verbose=True)
 csv_logger = tf.keras.callbacks.CSVLogger(os.path.join(args.ckpt_folder, 'log.csv'))
+ckpt_callback = tf.keras.callbacks.LambdaCallback(on_epoch_end=save_model)
 
 keras.backend.clear_session()
+
 model = Model()
 
 
 
 optimizer = keras.optimizers.Adam(learning_rate=args.lr)
 model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+callbacks = [csv_logger]
+if args.save_ckpt:
+  callbacks.append(ckpt_callback)
+if args.save_pred:
+  callbacks.append(save_callback)
 
 get_weight_hash()
 get_input_hash()
@@ -193,11 +206,10 @@ get_input_hash()
 EPOCHS = 200
 
 start = time.time()
-save_prediction(-1)
 _ = model.fit(trainloader,
           epochs=EPOCHS,
           validation_data=testloader,
-          callbacks=[save_callback, csv_logger])
+          callbacks=callbacks)
 end = time.time()
 print("Network takes {:.3f} seconds to train".format(end - start))
 

@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 4e-4rr1 --lr 4e-4 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 4e-4rr2 --lr 4e-4 1>/dev/null 2>&1 &
@@ -13,22 +13,14 @@ nohup python small_cnn.py --ckpt_folder 4e-4rr6 --lr 4e-4 1>/dev/null 2>&1 &
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 4e-4rr7 --lr 4e-4 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 4e-4rr8 --lr 4e-4 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 4e-4rr9 --lr 4e-4 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 4e-4rr8 --lr 4e-4 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 4e-4rr9 --lr 4e-4 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)
 
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 4e-4rf1 --lr 4e-4 --deterministic_input 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 4e-4rf2 --lr 4e-4 --deterministic_input 1>/dev/null 2>&1 &
@@ -43,23 +35,15 @@ nohup python small_cnn.py --ckpt_folder 4e-4rf6 --lr 4e-4 --deterministic_input 
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 4e-4rf7 --lr 4e-4 --deterministic_input 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 4e-4rf8 --lr 4e-4 --deterministic_input 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 4e-4rf9 --lr 4e-4 --deterministic_input 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 4e-4rf8 --lr 4e-4 --deterministic_input 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 4e-4rf9 --lr 4e-4 --deterministic_input 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)
 
 
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 4e-4fr1 --lr 4e-4 --deterministic_init 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 4e-4fr2 --lr 4e-4 --deterministic_init 1>/dev/null 2>&1 &
@@ -74,21 +58,13 @@ nohup python small_cnn.py --ckpt_folder 4e-4fr6 --lr 4e-4 --deterministic_init 1
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 4e-4fr7 --lr 4e-4 --deterministic_init 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 4e-4fr8 --lr 4e-4 --deterministic_init 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 4e-4fr9 --lr 4e-4 --deterministic_init 1>/dev/null 2>&1 &
-pid9=$!
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+# nohup python small_cnn.py --ckpt_folder 4e-4fr8 --lr 4e-4 --deterministic_init 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 4e-4fr9 --lr 4e-4 --deterministic_init 1>/dev/null 2>&1 &
+# pid9=$!
+wait $(jobs -p)
 
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 4e-4ff1 --lr 4e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 4e-4ff2 --lr 4e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
@@ -103,24 +79,16 @@ nohup python small_cnn.py --ckpt_folder 4e-4ff6 --lr 4e-4 --deterministic_init -
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 4e-4ff7 --lr 4e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 4e-4ff8 --lr 4e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 4e-4ff9 --lr 4e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 4e-4ff8 --lr 4e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 4e-4ff9 --lr 4e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)
 
 ###################################
 
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 8e-4rr1 --lr 8e-4 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 8e-4rr2 --lr 8e-4 1>/dev/null 2>&1 &
@@ -135,22 +103,14 @@ nohup python small_cnn.py --ckpt_folder 8e-4rr6 --lr 8e-4 1>/dev/null 2>&1 &
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 8e-4rr7 --lr 8e-4 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 8e-4rr8 --lr 8e-4 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 8e-4rr9 --lr 8e-4 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 8e-4rr8 --lr 8e-4 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 8e-4rr9 --lr 8e-4 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)
 
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 8e-4rf1 --lr 8e-4 --deterministic_input 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 8e-4rf2 --lr 8e-4 --deterministic_input 1>/dev/null 2>&1 &
@@ -165,22 +125,14 @@ nohup python small_cnn.py --ckpt_folder 8e-4rf6 --lr 8e-4 --deterministic_input 
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 8e-4rf7 --lr 8e-4 --deterministic_input 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 8e-4rf8 --lr 8e-4 --deterministic_input 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 8e-4rf9 --lr 8e-4 --deterministic_input 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 8e-4rf8 --lr 8e-4 --deterministic_input 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 8e-4rf9 --lr 8e-4 --deterministic_input 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)
 
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 8e-4fr1 --lr 8e-4 --deterministic_init 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 8e-4fr2 --lr 8e-4 --deterministic_init 1>/dev/null 2>&1 &
@@ -195,23 +147,15 @@ nohup python small_cnn.py --ckpt_folder 8e-4fr6 --lr 8e-4 --deterministic_init 1
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 8e-4fr7 --lr 8e-4 --deterministic_init 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 8e-4fr8 --lr 8e-4 --deterministic_init 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 8e-4fr9 --lr 8e-4 --deterministic_init 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 8e-4fr8 --lr 8e-4 --deterministic_init 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 8e-4fr9 --lr 8e-4 --deterministic_init 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)
 
 
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 8e-4ff1 --lr 8e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 8e-4ff2 --lr 8e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
@@ -226,24 +170,16 @@ nohup python small_cnn.py --ckpt_folder 8e-4ff6 --lr 8e-4 --deterministic_init -
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 8e-4ff7 --lr 8e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 8e-4ff8 --lr 8e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 8e-4ff9 --lr 8e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 8e-4ff8 --lr 8e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 8e-4ff9 --lr 8e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)
 
 
 #############################
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 16e-4rr1 --lr 16e-4 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 16e-4rr2 --lr 16e-4 1>/dev/null 2>&1 &
@@ -258,22 +194,14 @@ nohup python small_cnn.py --ckpt_folder 16e-4rr6 --lr 16e-4 1>/dev/null 2>&1 &
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 16e-4rr7 --lr 16e-4 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 16e-4rr8 --lr 16e-4 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 16e-4rr9 --lr 16e-4 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 16e-4rr8 --lr 16e-4 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 16e-4rr9 --lr 16e-4 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)
 
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 16e-4rf1 --lr 16e-4 --deterministic_input 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 16e-4rf2 --lr 16e-4 --deterministic_input 1>/dev/null 2>&1 &
@@ -288,23 +216,13 @@ nohup python small_cnn.py --ckpt_folder 16e-4rf6 --lr 16e-4 --deterministic_inpu
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 16e-4rf7 --lr 16e-4 --deterministic_input 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 16e-4rf8 --lr 16e-4 --deterministic_input 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 16e-4rf9 --lr 16e-4 --deterministic_input 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 16e-4rf8 --lr 16e-4 --deterministic_input 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 16e-4rf9 --lr 16e-4 --deterministic_input 1>/dev/null 2>&1 &
+# pid9=$!
+wait $(jobs -p)
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
-
-
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 16e-4fr1 --lr 16e-4 --deterministic_init 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 16e-4fr2 --lr 16e-4 --deterministic_init 1>/dev/null 2>&1 &
@@ -319,22 +237,13 @@ nohup python small_cnn.py --ckpt_folder 16e-4fr6 --lr 16e-4 --deterministic_init
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 16e-4fr7 --lr 16e-4 --deterministic_init 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 16e-4fr8 --lr 16e-4 --deterministic_init 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 16e-4fr9 --lr 16e-4 --deterministic_init 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 16e-4fr8 --lr 16e-4 --deterministic_init 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 16e-4fr9 --lr 16e-4 --deterministic_init 1>/dev/null 2>&1 &
+# pid9=$!
+wait $(jobs -p)
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
-
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="1"
 nohup python small_cnn.py --ckpt_folder 16e-4ff1 --lr 16e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
 pid1=$!
 nohup python small_cnn.py --ckpt_folder 16e-4ff2 --lr 16e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
@@ -349,17 +258,9 @@ nohup python small_cnn.py --ckpt_folder 16e-4ff6 --lr 16e-4 --deterministic_init
 pid6=$!
 nohup python small_cnn.py --ckpt_folder 16e-4ff7 --lr 16e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
 pid7=$!
-nohup python small_cnn.py --ckpt_folder 16e-4ff8 --lr 16e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
-pid8=$!
-nohup python small_cnn.py --ckpt_folder 16e-4ff9 --lr 16e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
-pid9=$!
+# nohup python small_cnn.py --ckpt_folder 16e-4ff8 --lr 16e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
+# pid8=$!
+# nohup python small_cnn.py --ckpt_folder 16e-4ff9 --lr 16e-4 --deterministic_init --deterministic_input 1>/dev/null 2>&1 &
+# pid9=$!
 
-wait $pid1
-wait $pid2
-wait $pid3
-wait $pid4
-wait $pid5
-wait $pid6
-wait $pid7
-wait $pid8
-wait $pid9
+wait $(jobs -p)

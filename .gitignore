@@ -7,3 +7,6 @@ logs*
 resnetckpt
 smallcnne200
 smallcnnepoch50
+smallcnne200det
+smallcnne200ckpt
+resnete150

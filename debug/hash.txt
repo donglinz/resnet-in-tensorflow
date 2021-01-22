@@ -1,0 +1,36 @@
+conv2d/kernel:0 182d388ea61cc87e0f5e9a1b537c1d30
+conv2d/bias:0 3b5d3c7d207e37dceeedd301e35e2e58
+conv2d_1/kernel:0 8b0ced5be746bfbfcf3891f0a51acf74
+conv2d_1/bias:0 f09f35a5637839458e462e6350ecbce4
+conv2d_2/kernel:0 78b912b95f5da5c951ad39080cd6b03b
+conv2d_2/bias:0 f09f35a5637839458e462e6350ecbce4
+dense/kernel:0 aff2e7e8feb4271cd33c46e8ccd57486
+dense/bias:0 f09f35a5637839458e462e6350ecbce4
+dense_1/kernel:0 3139a1ded0145953dd2378778e79e2a9
+dense_1/bias:0 fd4b38e94292e00251b9f39c47ee5710
+train data x hash:5cc0d635f282709d8e0fc78cae17f0d7
+train data y hash:fd52ce8e4ab4601d4a4aba228bdd9139
+conv2d/kernel:0 81f101661f6c2e15bf75918ea357346d
+conv2d/bias:0 3b5d3c7d207e37dceeedd301e35e2e58
+conv2d_1/kernel:0 fff4fffb3ee89561e94018ea520799f8
+conv2d_1/bias:0 f09f35a5637839458e462e6350ecbce4
+conv2d_2/kernel:0 cd1b35eca7a43f5dba1dd4a4c35c7a6e
+conv2d_2/bias:0 f09f35a5637839458e462e6350ecbce4
+dense/kernel:0 072d9623e519f8c1963038840eaedc9b
+dense/bias:0 f09f35a5637839458e462e6350ecbce4
+dense_1/kernel:0 d6de71ea90e70ddbce984311cc16430d
+dense_1/bias:0 fd4b38e94292e00251b9f39c47ee5710
+train data x hash:ab3b2da0bba9a1d62ef36a756ca4d53d
+train data y hash:283d8964961cdcfe278a69dbf4a77fa4
+conv2d/kernel:0 aecc2967f23f8f4420e9491e5c275389
+conv2d/bias:0 3b5d3c7d207e37dceeedd301e35e2e58
+conv2d_1/kernel:0 9cfd786c32e1322d54d607ae61beca6c
+conv2d_1/bias:0 f09f35a5637839458e462e6350ecbce4
+conv2d_2/kernel:0 337a6343f7e06090f943ba9692ae6566
+conv2d_2/bias:0 f09f35a5637839458e462e6350ecbce4
+dense/kernel:0 480e416541a1bb8f2c2e173663ed02f8
+dense/bias:0 f09f35a5637839458e462e6350ecbce4
+dense_1/kernel:0 d975237def4340183abbe4d3a3dc3128
+dense_1/bias:0 fd4b38e94292e00251b9f39c47ee5710
+train data x hash:599c945a4e503b6ffa9b65a5b1bd1b09
+train data y hash:c975ece2b0a6580412fa78b2afeb567a
