@@ -8,6 +8,7 @@ parser.add_argument('--ckpt_folder', type=str, required=True)
 parser.add_argument('--lr', type=float, required=True)
 parser.add_argument('--save_ckpt', action='store_true')
 parser.add_argument('--save_pred', action='store_true')
+parser.add_argument('--epochs', type=int, default=200)
 args = parser.parse_args()
 
 import tensorflow as tf
@@ -19,6 +20,7 @@ from tensorflow.keras.initializers import GlorotUniform
 
 import os
 if args.deterministic_tf:
+  print('Enabling deterministic tensorflow operations and cuDNN...')
   os.environ["TF_DETERMINISTIC_OPS"] = "1"
   os.environ["TF_CUDNN_DETERMINISTIC"] = "1"
 import time
@@ -170,7 +172,7 @@ def get_input_hash():
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lr_schedule(epoch), verbose=True)
 
 def save_prediction(epoch, logs):
-  if epoch in [9, 49, 99, 199]:
+  if epoch == 9 or (epoch + 1) % 50 == 0 or epoch == args.epochs - 1:
     pred_array = np.array([]).reshape(0, 10)
     for x, y in testloader:
       pred = model(x)
@@ -180,7 +182,7 @@ def save_prediction(epoch, logs):
     np.savetxt(os.path.join(args.ckpt_folder, f'pred{epoch}.txt'), pred_array)
 
 def save_model(epoch, logs):
-  if epoch in [9, 49, 99, 199]:
+  if epoch == 9 or (epoch + 1) % 50 == 0 or epoch == args.epochs - 1:
     tf.keras.models.save_model(model, os.path.join(args.ckpt_folder, f'ckpt{epoch}'), save_format='tf')
 
 save_callback = tf.keras.callbacks.LambdaCallback(on_epoch_end=save_prediction, verbose=True)
@@ -197,18 +199,20 @@ optimizer = keras.optimizers.Adam(learning_rate=args.lr)
 model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 callbacks = [csv_logger]
 if args.save_ckpt:
+  print('Adding model save ckpt callback...')
   callbacks.append(ckpt_callback)
 if args.save_pred:
+  print('Adding model save prediction callbaack...')
   callbacks.append(save_callback)
 
 get_weight_hash()
 get_input_hash()
 
-EPOCHS = 200
+
 
 start = time.time()
 _ = model.fit(trainloader,
-          epochs=EPOCHS,
+          epochs=args.epochs,
           validation_data=testloader,
           callbacks=callbacks)
 end = time.time()
