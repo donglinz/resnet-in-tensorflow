@@ -145,13 +145,13 @@ def lr_schedule(epoch):
 
 import hashlib
 def get_weight_hash():
-  with open(os.path.join(args.ckpt_folder, 'hash.txt'), 'a') as f:
-    for w in model.weights:
-      name = w.name
-      w = w.numpy()
-      w.flags.writeable = False
-      
-      f.write(name + ' ' + hashlib.md5(w.tobytes()).hexdigest() + '\n')
+  arr = []
+  for w in model.weights:
+    name = w.name
+    w = w.numpy()
+    w.flags.writeable = False
+  arr.append(name + ' ' + hashlib.md5(w.tobytes()).hexdigest())
+  tf.io.write_file(os.path.join(args.ckpt_folder, 'weighthash.txt'), '\n'.join(arr))
 def get_input_hash():
   arr_x = []
   arr_y = []
@@ -169,7 +169,7 @@ def get_input_hash():
   
   arr_x.flags.writeable = False
   arr_y.flags.writeable = False
-  tf.io.write_file(os.path.join(args.ckpt_folder, 'hash.txt'), 'train data x hash:' + hashlib.md5(arr_x.tobytes()).hexdigest() + '\n'+ 'train data y hash:' + hashlib.md5(arr_y.tobytes()).hexdigest() + '\n')
+  tf.io.write_file(os.path.join(args.ckpt_folder, 'inputhash.txt'), 'train data x hash:' + hashlib.md5(arr_x.tobytes()).hexdigest() + '\n'+ 'train data y hash:' + hashlib.md5(arr_y.tobytes()).hexdigest() + '\n')
 
 
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lr_schedule(epoch), verbose=True)
