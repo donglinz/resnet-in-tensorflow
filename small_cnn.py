@@ -9,9 +9,11 @@ parser.add_argument('--lr', type=float, required=True)
 parser.add_argument('--save_ckpt', action='store_true')
 parser.add_argument('--save_pred', action='store_true')
 parser.add_argument('--epochs', type=int, default=200)
+parser.add_argument('--tpu', action='store_true')
 args = parser.parse_args()
 
 import tensorflow as tf
+import tensorflow_datasets as tfds
 
 from tensorflow import keras
 from tensorflow.keras.datasets import cifar10
@@ -23,8 +25,16 @@ if args.deterministic_tf:
   print('Enabling deterministic tensorflow operations and cuDNN...')
   os.environ["TF_DETERMINISTIC_OPS"] = "1"
   os.environ["TF_CUDNN_DETERMINISTIC"] = "1"
-import time
 
+if args.tpu:
+  resolver = tf.distribute.cluster_resolver.TPUClusterResolver(tpu='grpc://' + os.environ['COLAB_TPU_ADDR'])
+  tf.config.experimental_connect_to_cluster(resolver)
+  # This is the TPU initialization code that has to be at the beginning.
+  tf.tpu.experimental.initialize_tpu_system(resolver)
+  print("All devices: ", tf.config.list_logical_devices('TPU'))
+  strategy = tf.distribute.TPUStrategy(resolver)
+
+import time
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -38,19 +48,17 @@ physical_devices = tf.config.list_physical_devices('GPU')
 for gpu in physical_devices:
     tf.config.experimental.set_memory_growth(gpu, True)
   
-
-(x_train, y_train), (x_test, y_test) = cifar10.load_data()
-
-CLASS_NAMES = ("airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck")
-print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+if args.tpu:  
+  (x_train, y_train), (x_test, y_test) = cifar10.load_data('cifar10', data_dir='gs://donglin-datasets/')
+else:
+  (x_train, y_train), (x_test, y_test) = cifar10.load_data('cifar10')
 
 
 AUTO = tf.data.experimental.AUTOTUNE
 BATCH_SIZE = args.batch_size
 IMG_SHAPE = 32
 
-trainloader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-testloader = tf.data.Dataset.from_tensor_slices((x_test, y_test))
+trainloader, testloader = tfds.
 
 def preprocess_image(image, label):
   img = tf.cast(image, tf.float32)
@@ -62,7 +70,7 @@ if args.deterministic_input:
         trainloader
         .shuffle(1024, seed=0)
         .map(preprocess_image, num_parallel_calls=AUTO)
-        .batch(BATCH_SIZE)
+        .batch(BATCH_SIZE, drop_remainder=True)
         .prefetch(AUTO)
     )
 else:
@@ -70,14 +78,14 @@ else:
         trainloader
         .shuffle(1024)
         .map(preprocess_image, num_parallel_calls=AUTO)
-        .batch(BATCH_SIZE)
+        .batch(BATCH_SIZE, drop_remainder=True)
         .prefetch(AUTO)
     )
 
 testloader = (
     testloader
     .map(preprocess_image, num_parallel_calls=AUTO)
-    .batch(BATCH_SIZE)
+    .batch(BATCH_SIZE, drop_remainder=True)
     .prefetch(AUTO)
 )
 
@@ -114,10 +122,6 @@ def Model():
 
 tf.keras.backend.clear_session()
 model = Model()
-
-tf.keras.utils.plot_model(
-    model, to_file='small_cnn.png', show_shapes=True, show_layer_names=True, dpi=65
-)
 
 # Custom LR schedule as mentioned in the LossLandscape paper
 LR_SCHEDULE = [
@@ -190,13 +194,16 @@ csv_logger = tf.keras.callbacks.CSVLogger(os.path.join(args.ckpt_folder, 'log.cs
 ckpt_callback = tf.keras.callbacks.LambdaCallback(on_epoch_end=save_model)
 
 keras.backend.clear_session()
+if args.tpu:
+  with strategy.scope():
+    model = Model()
+    optimizer = keras.optimizers.Adam(learning_rate=args.lr)
+    model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+else:
+  model = Model()
+  optimizer = keras.optimizers.Adam(learning_rate=args.lr)
+  model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-model = Model()
-
-
-
-optimizer = keras.optimizers.Adam(learning_rate=args.lr)
-model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 callbacks = [csv_logger]
 if args.save_ckpt:
   print('Adding model save ckpt callback...')
@@ -207,8 +214,6 @@ if args.save_pred:
 
 get_weight_hash()
 get_input_hash()
-
-
 
 start = time.time()
 _ = model.fit(trainloader,
