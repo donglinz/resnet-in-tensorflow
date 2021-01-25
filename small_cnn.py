@@ -61,11 +61,11 @@ IMG_SHAPE = 32
 
 
 
-def preprocess_image(image, label):
-  img = tf.cast(image, tf.float32)
+def preprocess_image(data):
+  img = tf.cast(data['image'], tf.float32)
   img = img/255.
 
-  return img, label
+  return img, data['label']
 if args.deterministic_input:
     trainloader = (
         trainloader
