@@ -49,10 +49,11 @@ for gpu in physical_devices:
     tf.config.experimental.set_memory_growth(gpu, True)
   
 if args.tpu:  
-  trainloader, testloader = tfds.load('cifar10', data_dir='gs://donglin-datasets/')
+  dataset = tfds.load('cifar10', data_dir='gs://donglin-datasets/')
 else:
-  trainloader, testloader = tfds.load('cifar10')
+  dataset = tfds.load('cifar10')
 
+trainloader, testloader = dataset['train'], dataset['test']
 
 AUTO = tf.data.experimental.AUTOTUNE
 BATCH_SIZE = args.batch_size
