@@ -49,16 +49,16 @@ for gpu in physical_devices:
     tf.config.experimental.set_memory_growth(gpu, True)
   
 if args.tpu:  
-  (x_train, y_train), (x_test, y_test) = cifar10.load_data('cifar10', data_dir='gs://donglin-datasets/')
+  trainloader, testloader = tfds.load('cifar10', data_dir='gs://donglin-datasets/')
 else:
-  (x_train, y_train), (x_test, y_test) = cifar10.load_data('cifar10')
+  trainloader, testloader = tfds.load('cifar10')
 
 
 AUTO = tf.data.experimental.AUTOTUNE
 BATCH_SIZE = args.batch_size
 IMG_SHAPE = 32
 
-trainloader, testloader = tfds.
+
 
 def preprocess_image(image, label):
   img = tf.cast(image, tf.float32)
