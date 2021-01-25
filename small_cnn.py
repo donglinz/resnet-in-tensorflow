@@ -169,10 +169,8 @@ def get_input_hash():
   
   arr_x.flags.writeable = False
   arr_y.flags.writeable = False
+  tf.io.write_file(os.path.join(args.ckpt_folder, 'hash.txt'), 'train data x hash:' + hashlib.md5(arr_x.tobytes()).hexdigest() + '\n'+ 'train data y hash:' + hashlib.md5(arr_y.tobytes()).hexdigest() + '\n')
 
-  with open(os.path.join(args.ckpt_folder, 'hash.txt'), 'a') as f:
-    f.write('train data x hash:' + hashlib.md5(arr_x.tobytes()).hexdigest() + '\n')
-    f.write('train data y hash:' + hashlib.md5(arr_y.tobytes()).hexdigest() + '\n')
 
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lr_schedule(epoch), verbose=True)
 
@@ -184,7 +182,7 @@ def save_prediction(epoch, logs):
       pred_array = np.concatenate((pred_array, pred))
 
     pred_array = np.argmax(pred_array, axis=1)
-    np.savetxt(os.path.join(args.ckpt_folder, f'pred{epoch}.txt'), pred_array)
+    tf.io.write_file(os.path.join(args.ckpt_folder, f'pred{epoch}.txt'), '\n'.join(map(lambda x: str(x), pred_array)))
 
 def save_model(epoch, logs):
   if epoch == 9 or (epoch + 1) % 50 == 0 or epoch == args.epochs - 1:
