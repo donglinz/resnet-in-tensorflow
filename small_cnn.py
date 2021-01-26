@@ -150,7 +150,7 @@ def get_weight_hash():
     name = w.name
     w = w.numpy()
     w.flags.writeable = False
-  arr.append(name + ' ' + hashlib.md5(w.tobytes()).hexdigest())
+    arr.append(name + ' ' + hashlib.md5(w.tobytes()).hexdigest())
   tf.io.write_file(os.path.join(args.ckpt_folder, 'weighthash.txt'), '\n'.join(arr))
 def get_input_hash():
   arr_x = []
