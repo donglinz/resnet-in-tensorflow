@@ -53,7 +53,7 @@ if args.tpu:
 else:
   dataset = tfds.load('cifar10')
 
-trainloader, testloader = dataset['train'], dataset['test']
+trainloader, testloader = dataset['train'].cache(), dataset['test'].cache()
 
 AUTO = tf.data.experimental.AUTOTUNE
 BATCH_SIZE = args.batch_size
