@@ -208,11 +208,11 @@ if args.save_ckpt:
   print('Adding model save ckpt callback...')
   callbacks.append(ckpt_callback)
 if args.save_pred:
-  print('Adding model save prediction callbaack...')
+  print('Adding model save prediction callback...')
   callbacks.append(save_callback)
 
-get_weight_hash()
-get_input_hash()
+# get_weight_hash()
+# get_input_hash()
 
 start = time.time()
 _ = model.fit(trainloader,

@@ -21,12 +21,12 @@
             "args": ["--ckpt_folder", "./ckpt2", "--deterministic_input", "--deterministic_init", "--lr", "4e-4"]
         },
         {
-            "name": "Test",
+            "name": "Resnet Test",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["--test", "True", "--test_ckpt_path", "logs_4e-4rr1/model.ckpt-9999"]
+            "args": ["--test", "True", "--test_ckpt_path", "resnetckpt/logs_4e-4ff/model.ckpt-59999"]
         }
     ]
 }

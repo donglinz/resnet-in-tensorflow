@@ -284,6 +284,14 @@ class Train(object):
         saver.restore(sess, FLAGS.test_ckpt_path)
         print 'Model restored from ', FLAGS.test_ckpt_path
 
+        # arr = []
+        # for var in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
+        #     numpy_var = sess.run(var)
+        #     arr.append(numpy_var.reshape(-1))
+            
+        # arr = np.concatenate(arr)
+        # np.save(os.path.join(os.path.dirname(FLAGS.test_ckpt_path), 'save.npy'), arr)
+
         prediction_array = np.array([]).reshape(-1, NUM_CLASS)
         # Test by batches
         for step in range(num_batches):

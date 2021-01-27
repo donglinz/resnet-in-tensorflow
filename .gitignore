@@ -3,6 +3,7 @@ logs*/
 *.pyc
 *.log
 *.png
+*.tar.gz
 logs*
 resnetckpt
 smallcnne200
@@ -13,3 +14,8 @@ resnete150
 pinkbar
 pinkbardet
 smallcnnckpt
+pinkbar2
+pinkbardet2
+pinkbardettest
+pinkbartest
+.ipynb_checkpoints
