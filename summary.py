@@ -17,7 +17,7 @@ legends = ['Random inits, random batches', 'Random inits, fixed batches', 'Fixed
 
 summary_l2 = True
 
-trials = 9
+trials = 8
 plt.figure()
 
 def set_box_color(bp, color):
@@ -40,9 +40,9 @@ for epoch in [9, 49, 99, 199]:
             models = []
             for trial in range(trials):
                 if summary_l2:
-                    models.append(tf.keras.models.load_model(f'smallcnnckpt/{lr}{legend}{trial+1}/ckpt{epoch}'))
+                    models.append(tf.keras.models.load_model(f'smallcnnckptdet/{lr}{legend}{trial+1}/ckpt{epoch}'))
                 else:
-                    arr.append(np.loadtxt('smallcnne200/{}{}{}/pred{}.txt'.format(lr, legend, trial+1, epoch)).astype(int))
+                    arr.append(np.loadtxt('smallcnnckptdet/{}{}{}/pred{}.txt'.format(lr, legend, trial+1, epoch)).astype(int))
                 # if lr == '4e-4':
                 #     arr.append(np.loadtxt('{}{}{}/pred19.txt'.format(lr, legend, trial+1)).astype(int))
                 # if lr == '8e-4':
@@ -88,7 +88,7 @@ for epoch in [9, 49, 99, 199]:
     plt.subplots_adjust(left=0.10, bottom=0.07, right=0.98, top=0.98)
     plt.show()
     if summary_l2:
-        plt.savefig(f'smallcnnl2dis{epoch+1}.png')
+        plt.savefig(f'smallcnndetl2dis{epoch+1}.png')
     else:
         plt.savefig(f'smallcnne{epoch+1}.png')
     fig.clear()
